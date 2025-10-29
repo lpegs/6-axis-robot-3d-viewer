@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🤖 3D Robot Arm Viewer
 
-## Getting Started
+An interactive **6-axis robot arm viewer** built with **Next.js**, **React Three Fiber**, and **Three.js**.
+This project provides a real-time visualization of an industrial robot where each axis can be individually controlled through range sliders.
 
-First, run the development server:
+---
+
+## 🚀 Features
+
+* **Real-time 3D visualization** of a 6-axis robot arm.
+* **Interactive controls** — adjust each axis using range inputs (sliders).
+* **Smooth motion** with optional animation interpolation.
+* **Polished visuals** using Drei utilities for lighting, camera, and environment.
+* **Modular React components** for maintainability and scalability.
+* **Next.js** integration for routing, SSR, and deployment flexibility.
+
+---
+
+## 🧱 Tech Stack
+
+| Layer             | Technology                                                                               |
+| ----------------- | ---------------------------------------------------------------------------------------- |
+| Framework         | [Next.js](https://nextjs.org/)                                                           |
+| 3D Rendering      | [Three.js](https://threejs.org/)                                                         |
+| React Integration | [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction) |
+| UI & Helpers      | [Drei](https://github.com/pmndrs/drei)                                                   |
+| Animation         | [React Spring](https://react-spring.dev/) or [GSAP](https://greensock.com/gsap/)         |
+
+---
+
+## ⚙️ Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/3d-robot-viewer.git
+cd 3d-robot-viewer
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+# or
+yarn install
+```
+
+### 3. Run the development server
 
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app will be available at [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📄 License
 
-## Learn More
+This project is licensed under the **MIT License**.
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 👤 Author
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Developed by **lpegs**
+Feel free to open issues or contribute improvements!
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
