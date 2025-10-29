@@ -24,36 +24,7 @@ This project provides a real-time visualization of an industrial robot where eac
 | 3D Rendering      | [Three.js](https://threejs.org/)                                                         |
 | React Integration | [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction) |
 | UI & Helpers      | [Drei](https://github.com/pmndrs/drei)                                                   |
-| Animation         | [React Spring](https://react-spring.dev/) or [GSAP](https://greensock.com/gsap/)         |
-
----
-
-## ⚙️ Installation
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/3d-robot-viewer.git
-cd 3d-robot-viewer
-```
-
-### 2. Install dependencies
-
-```bash
-npm install
-# or
-yarn install
-```
-
-### 3. Run the development server
-
-```bash
-npm run dev
-# or
-yarn dev
-```
-
-The app will be available at [http://localhost:3000](http://localhost:3000).
+| Animation         | [GSAP](https://greensock.com/gsap/)         |
 
 ---
 
