@@ -1,65 +1,193 @@
-import Image from "next/image";
+'use client'
+
+import { OrbitControls, Grid, ContactShadows } from '@react-three/drei'
+import { Canvas } from '@react-three/fiber'
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { RobotArm } from './components/RobotArm'
+import { ControlPanel } from './components/ControlPanel'
+
+type AxesTuple = [number, number, number, number, number, number]
+
+const createZeroAxes = (): AxesTuple => [0, 0, 0, 0, 0, 0]
 
 export default function Home() {
+  const [axes, setAxes] = useState<AxesTuple>(() => createZeroAxes())
+  const [pendingAxes, setPendingAxes] = useState<AxesTuple>(() => createZeroAxes())
+
+  const axesRef = useRef<AxesTuple>(createZeroAxes())
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const tweenRef = useRef<gsap.core.Tween | null>(null)
+  const isInitial = useRef(true)
+
+  useEffect(() => {
+    axesRef.current = axes
+  }, [axes])
+
+  const animateAxes = (target: AxesTuple) => {
+    const current = [...axesRef.current] as AxesTuple
+
+    if (!target.some((value, index) => value !== current[index])) {
+      axesRef.current = target
+      setAxes(target)
+      return
+    }
+
+    if (tweenRef.current) {
+      tweenRef.current.kill()
+      tweenRef.current = null
+    }
+
+    const interpolator = { progress: 0 }
+
+    tweenRef.current = gsap.to(interpolator, {
+      progress: 1,
+      duration: 0.6,
+      ease: 'power2.out',
+      onUpdate: () => {
+        const updated = current.map((startValue, index) =>
+          gsap.utils.interpolate(startValue, target[index], interpolator.progress)
+        ) as AxesTuple
+
+        axesRef.current = updated
+        setAxes(updated)
+      },
+      onComplete: () => {
+        axesRef.current = target
+        setAxes(target)
+        tweenRef.current = null
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (isInitial.current) {
+      isInitial.current = false
+      return
+    }
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+    }
+
+    const hasDifference = pendingAxes.some((value, index) => value !== axesRef.current[index])
+
+    if (!hasDifference) {
+      debounceRef.current = null
+      return
+    }
+
+    const target = [...pendingAxes] as AxesTuple
+
+    const timeoutId = setTimeout(() => {
+      animateAxes(target)
+    }, 250)
+
+    debounceRef.current = timeoutId
+
+    return () => {
+      clearTimeout(timeoutId)
+      if (debounceRef.current === timeoutId) {
+        debounceRef.current = null
+      }
+    }
+  }, [pendingAxes])
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+      }
+
+      if (tweenRef.current) {
+        tweenRef.current.kill()
+      }
+    }
+  }, [])
+
+  const handleAxisChange = (index: number, value: number) => {
+    setPendingAxes((prev) => {
+      const next = [...prev] as AxesTuple
+      next[index] = value
+      return next
+    })
+  }
+
+  const handleReset = () => {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+      debounceRef.current = null
+    }
+
+    if (tweenRef.current) {
+      tweenRef.current.kill()
+      tweenRef.current = null
+    }
+
+    const resetValues = createZeroAxes()
+    const resetPending = [...resetValues] as AxesTuple
+
+    axesRef.current = resetValues
+    setAxes(resetValues)
+    setPendingAxes(resetPending)
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <div className="h-screen w-screen bg-gradient-to-br from-slate-900 to-slate-700">
+      <ControlPanel axes={pendingAxes} onChange={handleAxisChange} onReset={handleReset} />
+      
+      <Canvas
+        shadows
+        camera={{ position: [12, 8, 12], fov: 50 }}
+        className="h-full w-full"
+      >
+        <color attach="background" args={['#1a1a2e']} />
+        
+        <ambientLight intensity={0.3} />
+        <directionalLight
+          position={[10, 10, 10]}
+          intensity={1.5}
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-camera-far={50}
+          shadow-camera-left={-10}
+          shadow-camera-right={10}
+          shadow-camera-top={10}
+          shadow-camera-bottom={-10}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        <directionalLight position={[-5, 5, -5]} intensity={0.5} />
+        <pointLight position={[0, 10, 0]} intensity={0.5} />
+
+        <RobotArm axes={axes} />
+        
+        <ContactShadows
+          position={[0, -3, 0]}
+          opacity={0.5}
+          scale={20}
+          blur={2}
+          far={10}
+        />
+        
+        <Grid
+          position={[0, -3.01, 0]}
+          args={[20, 20]}
+          cellSize={1}
+          cellThickness={0.5}
+          cellColor="#3a3a5a"
+          sectionSize={5}
+          sectionThickness={1}
+          sectionColor="#4a4a7a"
+          fadeDistance={25}
+          fadeStrength={1}
+        />
+        <OrbitControls
+          makeDefault
+          minPolarAngle={0}
+          maxPolarAngle={Math.PI / 2}
+          enableDamping
+          dampingFactor={0.05}
+        />
+      </Canvas>
     </div>
-  );
+  )
 }
